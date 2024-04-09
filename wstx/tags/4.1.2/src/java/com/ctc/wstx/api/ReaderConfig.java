@@ -458,13 +458,6 @@ public final class ReaderConfig
 
         mInputBufferLen = inputBufLen;
         mMinTextSegmentLen = minTextSegmentLen;
-        if (base != null) {
-            mMaxAttributesPerElement = base.mMaxAttributesPerElement;
-            mMaxChildrenPerElement = base.mMaxChildrenPerElement;
-            mMaxElementCount = base.mMaxElementCount;
-            mMaxElementDepth = base.mMaxElementDepth;
-            mMaxCharacters = base.mMaxCharacters;
-        }
 
         /* Ok, let's then see if we can find a buffer recycler. Since they
          * are lazily constructed, and since GC may just flush them out
