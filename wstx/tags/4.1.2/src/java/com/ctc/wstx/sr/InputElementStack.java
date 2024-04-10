@@ -86,6 +86,7 @@ public final class InputElementStack
     */
 
     protected int mDepth = 0;
+    protected long mTotalElements = 0;
 
     /**
      * Vector that contains all currently active namespaces; one String for
@@ -324,8 +325,21 @@ public final class InputElementStack
     public final void push(String prefix, String localName)
     {
         ++mDepth;
+        ++mTotalElements;
+        if (mDepth > mConfig.getMaxElementDepth()) {
+            throw new IllegalArgumentException("Maximum Element Depth Exceeded");
+        }
+        if (mTotalElements > mConfig.getMaxElementCount()) {
+            throw new IllegalArgumentException("Maximum Element Count Exceeded");
+        }
         String defaultNs = (mCurrElement == null) ?
             XmlConsts.DEFAULT_NAMESPACE_URI : mCurrElement.mDefaultNsURI;
+        if (mCurrElement != null) {
+            mCurrElement.mChildCount++;
+            if (mConfig.getMaxChildrenPerElement() > 0 && mCurrElement.mChildCount > mConfig.getMaxChildrenPerElement()) {
+                throw new IllegalArgumentException("Maximum Number of Children Elements Exceeded");
+            }
+        }
 
         if (mFreeElement == null) {
             mCurrElement = new Element(mCurrElement, mNamespaces.size(), prefix, localName);

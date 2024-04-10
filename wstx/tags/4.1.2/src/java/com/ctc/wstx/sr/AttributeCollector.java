@@ -190,6 +190,8 @@ public final class AttributeCollector
      * <code>mAttrMap</code> array.
      */
     protected int mAttrSpillEnd;
+    
+    protected int mMaxAttributesPerElement;
 
     /*
     ///////////////////////////////////////////////
@@ -207,6 +209,7 @@ public final class AttributeCollector
             mXmlIdPrefix = null;
             mXmlIdLocalName = "xml:id";
         }
+        mMaxAttributesPerElement = cfg.getMaxAttributesPerElement();
     }
 
     /**
@@ -408,6 +411,14 @@ public final class AttributeCollector
         }
 
         return null;
+    }
+
+    public int getMaxAttributesPerElement() {
+        return mMaxAttributesPerElement;
+    }
+
+    public void setMaxAttributesPerElement(int maxAttributesPerElement) {
+        this.mMaxAttributesPerElement = maxAttributesPerElement;
     }
 
     public int findIndex(String localName) {
@@ -749,6 +760,9 @@ public final class AttributeCollector
         } else {
             int valueStart = mValueBuilder.getCharSize();
             if (mAttrCount >= mAttributes.length) {
+                if ((mAttrCount + mNsCount) >= mMaxAttributesPerElement) {
+                    throw new IllegalArgumentException("Attribute limit exceeded");
+                }
                 mAttributes = (Attribute[]) DataUtil.growArrayBy50Pct(mAttributes);
             }
             Attribute curr = mAttributes[mAttrCount];
@@ -878,6 +892,9 @@ public final class AttributeCollector
                 }
             }
             if (len >= mNamespaces.length) {
+                if ((mAttrCount + mNsCount) >= mMaxAttributesPerElement) {
+                    throw new IllegalArgumentException("Attribute limit exceeded");
+                }
                 mNamespaces = (Attribute[]) DataUtil.growArrayBy50Pct(mNamespaces);
             }
             int uriStart = mNamespaceBuilder.getCharSize();
